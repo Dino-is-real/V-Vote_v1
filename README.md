@@ -1,6 +1,6 @@
-# 🗳️ Secure Online Voting System
+# Secure Online Voting System
 
-## 📌 Project Name & Overview
+## Project Name & Overview
 
 **Secure Online Voting System** is a full-stack web application designed to digitize the election process in a secure, transparent, and role-based manner. The platform supports four types of users: Voter, Candidate, Election Administrator, and Auditor.  
 
@@ -8,7 +8,7 @@ The system manages the complete election lifecycle — from user registration an
 
 ---
 
-## ❗ Problem It Solves
+## Problem It Solves
 
 Traditional voting systems face several challenges:
 
@@ -30,9 +30,9 @@ This project solves these issues by providing:
 
 ---
 
-## 👥 Target Users (Personas)
+## Target Users (Personas)
 
-### 🗳️ Voter  
+### Voter  
 A citizen who wants a secure and easy way to participate in elections online.
 
 **Goals:**
@@ -43,7 +43,7 @@ A citizen who wants a secure and easy way to participate in elections online.
 
 ---
 
-### 🧑‍💼 Candidate  
+### Candidate  
 An individual participating in an election.
 
 **Goals:**
@@ -54,7 +54,7 @@ An individual participating in an election.
 
 ---
 
-### 🛠️ Election Administrator  
+### Election Administrator  
 The authority responsible for managing elections.
 
 **Goals:**
@@ -66,7 +66,7 @@ The authority responsible for managing elections.
 
 ---
 
-### 🔍 Auditor  
+### Auditor  
 An independent authority to verify the system’s integrity.
 
 **Goals:**
@@ -77,13 +77,13 @@ An independent authority to verify the system’s integrity.
 
 ---
 
-## 🌟 Vision Statement
+## Vision Statement
 
 To build a secure, transparent, and scalable online voting platform that modernizes the election process, improves accessibility, and ensures fairness and accountability through technology.
 
 ---
 
-## 🎯 Key Features / Goals
+## Key Features / Goals
 
 - Role-based dashboards for Voter, Candidate, Admin, and Auditor  
 - Secure authentication and authorization (JWT-based)  
@@ -93,13 +93,13 @@ To build a secure, transparent, and scalable online voting platform that moderni
 - Open and close voting functionality  
 - Automatic vote counting and result publishing  
 - Audit logs and report generation  
-- Modern, responsive UI with animations  
+- Modern, responsive UI  
 - Cloud database integration (MongoDB Atlas)  
 - Dockerized deployment  
 
 ---
 
-## 📈 Success Metrics
+## Success Metrics
 
 The project will be considered successful if:
 
@@ -115,7 +115,7 @@ The project will be considered successful if:
 
 ---
 
-## ⚠️ Assumptions & Constraints
+## Assumptions & Constraints
 
 ### Assumptions
 - Users have access to the internet  
@@ -133,6 +133,6 @@ The project will be considered successful if:
 
 ---
 
-## 🏁 Conclusion
+## Conclusion
 
 This project demonstrates a real-world online voting system using modern full-stack technologies with role-based access, secure workflows, and transparent auditing. It is suitable for academic projects, demonstrations, and portfolio showcases.
