@@ -99,6 +99,65 @@ To build a secure, transparent, and scalable online voting platform that moderni
 
 ---
 
+## Installation & Setup
+
+Follow these steps to set up and run the project locally.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (Optional, for containerized setup)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account (or local MongoDB)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Dino-is-real/V-Vote_v1.git
+cd V-Vote_v1
+```
+
+### 2. Environment Setup
+
+Create a `.env` file in the `server` directory with the following variables:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+PORT=5000
+```
+
+### 3. Run with Docker (Recommended)
+
+Make sure Docker Desktop is running, then execute:
+
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- **Frontend:** `http://localhost:5173`
+- **Backend:** `http://localhost:5000`
+
+### 4. Run Manually
+
+If you prefer running without Docker:
+
+**Backend:**
+```bash
+cd server
+npm install
+npm start
+```
+
+**Frontend:**
+```bash
+cd client
+npm install
+npm run dev
+```
+
+---
+
 ## Success Metrics
 
 The project will be considered successful if:
