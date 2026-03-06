@@ -99,6 +99,15 @@ To build a secure, transparent, and scalable online voting platform that moderni
 
 ---
 
+## Software Design
+
+This application utilizes a decoupled **Client-Server Architecture**, separating the React frontend from the Node.js REST API to ensure high modularity and independent scalability. The backend adheres strictly to the **Model-View-Controller (MVC)** pattern for strong domain cohesion, while security is governed by a centralized **JWT Authentication Middleware**, keeping core business logic tightly decoupled from access control.
+
+*Insert your architecture diagrams below:*
+![High-Level Architecture](Design/architecture.png)
+
+---
+
 ## Installation & Setup
 
 Follow these steps to set up and run the project locally.
