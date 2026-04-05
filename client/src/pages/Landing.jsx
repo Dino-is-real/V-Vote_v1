@@ -1,207 +1,290 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Shield, BarChart2, Globe, CheckCircle, Smartphone, Lock } from 'lucide-react';
+import { motion, useScroll, useTransform, animate } from 'framer-motion';
+import { Shield, Smartphone, Lock, Users, UserCheck, Settings, FileText } from 'lucide-react';
+import Button from '../components/ui/Button';
+import PageWrapper from '../components/layout/PageWrapper';
+
+// Animated Counter Component
+const Counter = ({ from, to, duration = 2 }) => {
+    const nodeRef = useRef();
+
+    useEffect(() => {
+        const node = nodeRef.current;
+        if (!node) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    animate(from, to, {
+                        duration,
+                        onUpdate(value) {
+                            node.textContent = Math.round(value).toLocaleString();
+                        },
+                    });
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [from, to, duration]);
+
+    return <span ref={nodeRef} />;
+};
 
 const Landing = () => {
+    const { scrollYProgress } = useScroll();
+    const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
+    const y2 = useTransform(scrollYProgress, [0, 1], [0, -300]);
+
+    const fadeIn = {
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    };
+
+    const staggerContainer = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2
+            }
+        }
+    };
+
     return (
-        <div className="font-sans overflow-x-hidden pt-16">
+        <PageWrapper className="font-sans overflow-x-hidden bg-white">
 
-            {/* Hero Section */}
-            <section className="relative min-h-[90vh] flex items-center justify-center bg-white overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+            {/* 1. Hero Section - Deep Dark Blue per Healthy Together */}
+            <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-dark pt-20 pb-10">
 
-                {/* Abstract Blobs */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 animate-float"></div>
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 animate-float" style={{ animationDelay: '2s' }}></div>
+                {/* Massive Vibrant Gradient Blob/Wave Effect Backdrop */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[120%] h-[80%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-secondary/40 via-primary/20 to-transparent blur-[100px] opacity-80 mix-blend-screen -skew-y-12 animate-float"></div>
+                    <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/30 via-primary/20 to-transparent blur-[120px] mix-blend-screen animate-float" style={{ animationDelay: '2s' }}></div>
+                </div>
 
-                <div className="container mx-auto px-6 relative z-10 text-center">
+                <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
+                        className="max-w-5xl mx-auto mt-12 md:mt-24"
                     >
-                        <span className="inline-block py-1 px-3 rounded-full bg-indigo-50 text-indigo-600 text-sm font-semibold mb-6 border border-indigo-100">
-                            🚀 The Future of Democracy is Here
-                        </span>
-                        <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-                            Secure. Transparent. <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Verifiable Elections.</span>
+                        <h1 className="text-huge md:text-mega font-black text-white mb-8 leading-none tracking-tight">
+                            Systems that deliver outcomes for <span className="vibrant-gradient-text">elections.</span>
                         </h1>
-                        <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                            Empower your community with V-Vote. The most advanced blockchain-inspired voting platform designed for security, integrity, and ease of use.
+                        <p className="text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
+                            Empower your organization with V-Vote. The highly secure, verifiable voting infrastructure built for trust.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link to="/signup" className="btn-primary text-lg px-8 py-4 shadow-xl shadow-indigo-500/30">
-                                Get Started Now
-                            </Link>
-                            <Link to="/results" className="btn-secondary text-lg px-8 py-4">
-                                View Live Demo
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            <Link to="/signup">
+                                <Button size="lg" className="w-full sm:w-auto px-12 py-5 text-xl">
+                                    Schedule a Demo
+                                </Button>
                             </Link>
                         </div>
-                    </motion.div>
-
-                    {/* Dashboard Preview */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.8 }}
-                        className="mt-20 mx-auto max-w-5xl rounded-2xl border-4 border-gray-100 shadow-2xl overflow-hidden glass-card"
-                    >
-                        {/* Placeholder for a dashboard screenshot - using a gradient block for now to simulate */}
-                        <DashboardMockup />
                     </motion.div>
                 </div>
             </section>
 
-            {/* Features Grid */}
-            <section className="py-24 bg-gray-50 relative">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose V-Vote?</h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">We combine cutting-edge security with user-centric design to perform elections of any scale.</p>
-                    </div>
+            {/* 2. Interactive Statistics Section - Light Theme */}
+            <section className="py-24 relative z-10 bg-white border-b border-slate-100">
+                <div className="container mx-auto px-6 relative z-10">
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-100"
+                    >
+                        {[
+                            { label: 'Votes Cast', value: 1250000, suffix: '+' },
+                            { label: 'Active Elections', value: 843, suffix: '' },
+                            { label: 'Organizations', value: 120, suffix: '+' },
+                            { label: 'Audit Logs', value: 5400000, suffix: '+' },
+                        ].map((stat, i) => (
+                            <motion.div key={i} variants={fadeIn} className="p-6">
+                                <div className="text-5xl md:text-6xl font-black mb-3 text-slate-900 tracking-tighter">
+                                    <Counter from={0} to={stat.value} duration={2.5} />{stat.suffix}
+                                </div>
+                                <div className="text-slate-500 font-bold uppercase tracking-widest text-sm">{stat.label}</div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
 
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <FeatureCard
-                            icon={<Shield className="text-primary" size={32} />}
-                            title="Ironclad Security"
-                            desc="Built with industry-standard encryption and Role-Based Access Control (RBAC) to ensure every vote is immutable."
+            {/* 3. Storytelling: How It Works - Clean, Large Type Blocks */}
+            <section className="py-32 bg-slate-50 relative overflow-hidden">
+                <div className="container mx-auto px-6">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeIn}
+                        className="mb-24 max-w-4xl"
+                    >
+                        <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter leading-tight">Built for <br />Absolute Trust.</h2>
+                        <p className="text-2xl text-slate-600 font-medium">Our architecture guarantees that once a vote is cast, it cannot be altered, deleted, or compromised by anyone.</p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+                        {[
+                            {
+                                title: "Verified Identity",
+                                desc: "Strict Role-Based Access Control and secure tokens ensure only eligible participants can cast a ballot.",
+                                icon: <Shield strokeWidth={2.5} className="w-10 h-10 text-primary" />,
+                                color: "bg-primary/10 text-primary"
+                            },
+                            {
+                                title: "Encrypted Voting",
+                                desc: "Votes are encrypted client-side and sent through secure channels to our tamper-evident datastore.",
+                                icon: <Smartphone strokeWidth={2.5} className="w-10 h-10 text-secondary" />,
+                                color: "bg-secondary/10 text-secondary"
+                            },
+                            {
+                                title: "Immutable Record",
+                                desc: "Every single transaction generates an immutable audit log accessible in real-time by verified Auditors.",
+                                icon: <Lock strokeWidth={2.5} className="w-10 h-10 text-accent" />,
+                                color: "bg-accent/10 text-accent"
+                            }
+                        ].map((step, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                transition={{ delay: i * 0.1, duration: 0.6 }}
+                                className="bg-white p-10 rounded-4xl shadow-sm border border-slate-100 flex flex-col"
+                            >
+                                <div className={`w-20 h-20 rounded-3xl ${step.color} flex items-center justify-center mb-8`}>
+                                    {step.icon}
+                                </div>
+                                <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">{step.title}</h3>
+                                <p className="text-slate-600 text-lg leading-relaxed font-medium">{step.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. Role-Based Features Grid - Colorful & Illustrative */}
+            <section className="py-32 bg-white relative">
+                <div className="container mx-auto px-6">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeIn}
+                        className="text-center mb-20 max-w-4xl mx-auto"
+                    >
+                        <h2 className="text-5xl md:text-7xl font-black text-slate-900 mb-8 tracking-tighter">Tailored for every <span className="vibrant-gradient-text">stakeholder.</span></h2>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <RoleCard
+                            icon={<Users className="w-8 h-8 text-white" />}
+                            title="Voters"
+                            desc="A frictionless, accessible interface to cast your vote securely from any device in seconds."
+                            delay={0}
+                            bgColor="bg-primary"
+                            textColor="text-slate-900"
                         />
-                        <FeatureCard
-                            icon={<Smartphone className="text-secondary" size={32} />}
-                            title="Mobile First"
-                            desc="Vote from anywhere, anytime. Our responsive design ensures a seamless experience on any device."
+                        <RoleCard
+                            icon={<UserCheck className="w-8 h-8 text-white" />}
+                            title="Candidates"
+                            desc="Real-time campaign analytics, registration status, and transparent outcome tracking."
+                            delay={0.1}
+                            bgColor="bg-secondary"
+                            textColor="text-slate-900"
                         />
-                        <FeatureCard
-                            icon={<BarChart2 className="text-accent" size={32} />}
-                            title="Instant Results"
-                            desc="Watch the election unfold in real-time with dynamic charts and transparent audit logs."
+                        <RoleCard
+                            icon={<Settings className="w-8 h-8 text-white" />}
+                            title="Admins"
+                            desc="Complete control over election lifecycle, voter management, and live reporting dashboards."
+                            delay={0.2}
+                            bgColor="bg-accent"
+                            textColor="text-slate-900"
                         />
-                        <FeatureCard
-                            icon={<Lock className="text-orange-500" size={32} />}
-                            title="Verifiable Integrity"
-                            desc="Every action is logged. Auditors can verify the integrity of the election process at any stage."
-                        />
-                        <FeatureCard
-                            icon={<Globe className="text-blue-500" size={32} />}
-                            title="Scalable Architecture"
-                            desc="Powered by Docker and MongoDB to handle thousands of concurrent voters with ease."
-                        />
-                        <FeatureCard
-                            icon={<CheckCircle className="text-green-500" size={32} />}
-                            title="Easy Setup"
-                            desc="Admins can set up an election in minutes with our intuitive wizard interface."
+                        <RoleCard
+                            icon={<FileText className="w-8 h-8 text-white" />}
+                            title="Auditors"
+                            desc="Unrestricted access to cryptographic audit logs and verification tools to ensure integrity."
+                            delay={0.3}
+                            bgColor="bg-slate-900"
+                            textColor="text-white"
                         />
                     </div>
+                </div>
+            </section>
+
+            {/* Footer CTA */}
+            <section className="py-32 relative overflow-hidden bg-primary text-white">
+                {/* Abstract overlay */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-secondary/30 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+
+                <div className="container mx-auto px-6 relative z-10 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="max-w-4xl mx-auto"
+                    >
+                        <h2 className="text-6xl md:text-7xl font-black mb-8 tracking-tighter leading-none">Ready to run a secure election?</h2>
+                        <p className="text-2xl text-primary-100 font-medium mb-12 max-w-2xl mx-auto drop-shadow-sm opacity-90">Join thousands of organizations that trust V-Vote for their mission-critical processes.</p>
+                        <Link to="/signup">
+                            <Button variant="secondary" size="lg" className="px-12 py-5 text-xl text-primary hover:text-primary hover:bg-white shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+                                Create Free Account
+                            </Button>
+                        </Link>
+                    </motion.div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-dark text-white py-12 border-t border-gray-800">
-                <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-                    <div className="mb-6 md:mb-0">
-                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                            V-Vote
+            <footer className="bg-dark text-slate-400 py-16 border-t border-slate-800">
+                <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                            <span className="text-white font-black text-xl">V</span>
+                        </div>
+                        <span className="text-3xl font-black text-white tracking-tight">
+                            V-Vote.
                         </span>
-                        <p className="text-gray-400 mt-2 text-sm">© 2026 V-Vote System. All rights reserved.</p>
                     </div>
-                    <div className="flex gap-6">
-                        <a href="#" className="text-gray-400 hover:text-primary transition">Privacy Policy</a>
-                        <a href="#" className="text-gray-400 hover:text-primary transition">Terms of Service</a>
-                        <a href="#" className="text-gray-400 hover:text-primary transition">Contact</a>
+                    <div className="flex gap-10 text-base font-bold text-slate-300">
+                        <a href="#" className="hover:text-white transition">Privacy Policy</a>
+                        <a href="#" className="hover:text-white transition">Terms of Service</a>
+                        <a href="#" className="hover:text-white transition">Security</a>
                     </div>
                 </div>
             </footer>
-        </div>
+        </PageWrapper>
     );
 };
 
-const FeatureCard = ({ icon, title, desc }) => (
+const RoleCard = ({ icon, title, desc, delay, bgColor, textColor }) => (
     <motion.div
-        whileHover={{ y: -5 }}
-        className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all"
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ delay, duration: 0.5 }}
+        whileHover={{ y: -8, transition: { duration: 0.2 } }}
+        className={`bg-slate-50 p-10 rounded-4xl border border-slate-100 transition-all group`}
     >
-        <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6">
+        <div className={`w-16 h-16 ${bgColor} rounded-full flex items-center justify-center mb-8 shadow-lg`}>
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-        <p className="text-gray-600 leading-relaxed">{desc}</p>
+        <h3 className={`text-3xl font-bold ${textColor === 'text-white' ? 'text-slate-900' : 'text-slate-900'} mb-4 tracking-tight`}>{title}</h3>
+        <p className="text-slate-600 text-lg leading-relaxed font-medium">{desc}</p>
     </motion.div>
 );
-
-const DashboardMockup = () => {
-    return (
-        <div className="bg-slate-50 w-full aspect-video flex text-left font-sans">
-            {/* Sidebar Mockup */}
-            <div className="w-64 bg-slate-900 text-slate-300 p-6 hidden md:flex flex-col gap-6">
-                <div className="flex items-center gap-2 text-white font-bold text-xl mb-4">
-                    <div className="w-8 h-8 bg-primary rounded-lg"></div> V-Vote
-                </div>
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3 bg-primary/10 text-primary px-4 py-2 rounded-lg">
-                        <div className="w-5 h-5 bg-primary rounded"></div> Dashboard
-                    </div>
-                    {['Elections', 'Candidates', 'Results', 'Settings'].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 rounded-lg transition">
-                            <div className="w-5 h-5 bg-slate-700 rounded"></div> {item}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Main Content Mockup */}
-            <div className="flex-1 p-8 flex flex-col gap-8 overflow-hidden">
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h3 className="text-2xl font-bold text-slate-800">Election Overview</h3>
-                        <p className="text-slate-500 text-sm">Real-time updates</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-slate-200"></div>
-                    </div>
-                </div>
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-3 gap-6">
-                    {[
-                        { label: 'Total Voters', val: '2,543', color: 'bg-indigo-500' },
-                        { label: 'Votes Cast', val: '1,892', color: 'bg-pink-500' },
-                        { label: 'Participation', val: '74%', color: 'bg-emerald-500' },
-                    ].map((stat, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className="bg-white p-6 rounded-xl shadow-sm border border-slate-100"
-                        >
-                            <div className={`w-10 h-10 ${stat.color} rounded-lg mb-4 opacity-20`}></div>
-                            <div className="text-2xl font-bold text-slate-800">{stat.val}</div>
-                            <div className="text-sm text-slate-500">{stat.label}</div>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Chart Mockup */}
-                <div className="flex-1 bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-end gap-4 justify-between">
-                    {[40, 70, 50, 90, 60, 80, 45].map((h, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ height: 0 }}
-                            whileInView={{ height: `${h}%` }}
-                            transition={{ duration: 1, delay: 0.5 + (i * 0.1) }}
-                            className="w-full bg-indigo-100 rounded-t-lg relative group overflow-hidden"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary to-indigo-300 opacity-80"></div>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 export default Landing;

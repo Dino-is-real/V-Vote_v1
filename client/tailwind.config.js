@@ -7,20 +7,26 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#6366f1",    // Indigo-500
-                secondary: "#ec4899",  // Pink-500
-                accent: "#8b5cf6",     // Violet-500
-                dark: "#0f172a",       // Slate-900
-                light: "#f8fafc",      // Slate-50
+                primary: "#3d47ff",    // Royal Blue (Healthy Together CTA)
+                secondary: "#f472b6",  // Pink-400 (for gradients)
+                accent: "#60a5fa",     // Blue-400 (for gradients)
+                dark: "#0b0e14",       // Deep Dark Blue
+                light: "#ffffff",
                 glass: "rgba(255, 255, 255, 0.1)",
+                glassDark: "rgba(11, 14, 20, 0.5)",
             },
             fontFamily: {
-                sans: ['Outfit', 'Inter', 'sans-serif'],
+                sans: ['Inter', 'Satoshi', 'sans-serif'],
+            },
+            fontSize: {
+                'huge': ['5rem', { lineHeight: '1.1', tracking: '-0.02em' }],
+                'mega': ['6.5rem', { lineHeight: '1', tracking: '-0.03em' }],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',
                 'slide-up': 'slideUp 0.5s ease-out',
                 'float': 'float 3s ease-in-out infinite',
+                'gradient-x': 'gradient-x 15s ease infinite',
             },
             keyframes: {
                 fadeIn: {
@@ -34,8 +40,22 @@ export default {
                 float: {
                     '0%, 100%': { transform: 'translateY(0)' },
                     '50%': { transform: 'translateY(-10px)' },
+                },
+                'gradient-x': {
+                    '0%, 100%': {
+                        'background-size': '200% 200%',
+                        'background-position': 'left center'
+                    },
+                    '50%': {
+                        'background-size': '200% 200%',
+                        'background-position': 'right center'
+                    },
                 }
             },
+            borderRadius: {
+                '4xl': '2rem', // ~32px
+                '5xl': '2.5rem', // ~40px
+            }
         },
     },
     plugins: [],

@@ -23,8 +23,21 @@ const createElection = async (req, res) => {
 /* GET ALL ELECTIONS */
 const getElections = async (req, res) => {
     try {
-        const elections = await Election.find().populate('candidates');
-        res.status(200).json(elections);
+        const elections = await Election.find().populate('candidates').lean(); // Use lean() to modify results
+
+        // Redact vote counts if election is not published to prevent early results leaking
+        const processedElections = elections.map(election => {
+            if (election.status !== 'published') {
+                election.candidates = election.candidates.map(c => {
+                    const candidateObj = { ...c };
+                    delete candidateObj.voteCount; // Hide vote count
+                    return candidateObj;
+                });
+            }
+            return election;
+        });
+
+        res.status(200).json(processedElections);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -37,7 +50,19 @@ const getElection = async (req, res) => {
         const election = await Election.findById(id).populate({
             path: 'candidates',
             populate: { path: 'user', select: 'name profileImage' }
-        });
+        }).lean(); // Use lean to modify the object
+
+        if (!election) return res.status(404).json({ msg: "Election not found" });
+
+        // Redact vote counts if election is not published
+        if (election.status !== 'published') {
+            election.candidates = election.candidates.map(c => {
+                const candidateObj = { ...c };
+                delete candidateObj.voteCount;
+                return candidateObj;
+            });
+        }
+
         res.status(200).json(election);
     } catch (err) {
         res.status(500).json({ error: err.message });

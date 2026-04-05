@@ -2,7 +2,35 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Shield, CheckCircle, Network } from 'lucide-react';
+import PageWrapper from '../components/layout/PageWrapper';
+import Button from '../components/ui/Button';
+
+const AnimatedBackgroundSignup = () => {
+    return (
+        <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-slate-50 items-center justify-center order-2 border-l border-slate-100">
+            {/* Soft Vibrant Background */}
+            <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] bg-secondary/15 rounded-full blur-[120px] pointer-events-none"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent/15 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div className="relative z-20 text-center max-w-lg px-8">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="w-24 h-24 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-10">
+                        <Shield strokeWidth={2.5} className="w-10 h-10 text-secondary" />
+                    </div>
+                    <h2 className="text-5xl md:text-6xl font-black mb-8 tracking-tighter text-slate-900 leading-tight">Create <br />Identity.</h2>
+                    <p className="text-xl text-slate-600 leading-relaxed font-medium">
+                        Become part of the decentralized voting network. Create your secure identity credentials.
+                    </p>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +41,8 @@ const Signup = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+
     const { register } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -34,124 +64,153 @@ const Signup = () => {
         }
     };
 
-    return (
-        <div className="min-h-screen flex bg-white">
-            {/* Left Side - Decorative */}
-            <div className="hidden lg:block w-1/2 relative overflow-hidden bg-gray-900 order-2">
-                <div className="absolute inset-0 bg-gradient-to-bl from-secondary to-primary opacity-90"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-16 text-center">
-                    <h2 className="text-5xl font-bold mb-6">Join the Revolution.</h2>
-                    <p className="text-xl text-pink-100 max-w-md">Create an account today and participate in secure, transparent elections.</p>
-                </div>
-            </div>
+    const roles = [
+        { id: 'voter', label: 'Voter', icon: User },
+        { id: 'candidate', label: 'Candidate', icon: Shield },
+        { id: 'admin', label: 'Admin', icon: Lock },
+        { id: 'auditor', label: 'Auditor', icon: CheckCircle }
+    ];
 
-            {/* Right Side - Form */}
-            <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 z-10 bg-white order-1"
-            >
-                <div className="max-w-md w-full space-y-6">
-                    <div className="text-center lg:text-left">
-                        <Link to="/" className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent mb-2 inline-block">
-                            V-Vote
+    return (
+        <PageWrapper className="min-h-screen flex bg-white relative overflow-hidden">
+            <AnimatedBackgroundSignup />
+
+            {/* Form Side */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 relative z-10 order-1">
+                <motion.div
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="max-w-md w-full"
+                >
+                    <div className="mb-10 lg:text-left">
+                        <Link to="/" className="text-2xl font-black text-slate-900 mb-8 inline-block tracking-tight">
+                            V-Vote<span className="text-secondary">.</span>
                         </Link>
-                        <h2 className="text-4xl font-bold text-gray-900 mt-4">Create Account</h2>
-                        <p className="text-gray-500 mt-2">Get started with your free account.</p>
+                        <h2 className="text-4xl font-black text-slate-900 tracking-tight">Sign Up</h2>
+                        <p className="text-lg text-slate-500 mt-2 font-medium">Establish your secure identity.</p>
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
-                            <span>⚠️ {error}</span>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center justify-center gap-3 mb-8 font-bold"
+                        >
+                            <span>{error}</span>
+                        </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Full Name</label>
-                            <div className="relative">
-                                <User className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                    placeholder="John Doe"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                    placeholder="john@example.com"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                    placeholder="••••••••"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">I am a...</label>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="mb-6">
+                            <label className="block text-sm font-bold text-slate-700 mb-3">I am registering as:</label>
                             <div className="grid grid-cols-2 gap-3">
-                                {['voter', 'candidate', 'admin', 'auditor'].map((r) => (
-                                    <button
-                                        type="button"
-                                        key={r}
-                                        onClick={() => setFormData({ ...formData, role: r })}
-                                        className={`py-3 rounded-xl border text-sm font-semibold capitalize transition-all flex items-center justify-center gap-2 ${formData.role === r
-                                                ? 'bg-primary text-white border-primary shadow-lg shadow-indigo-500/20'
-                                                : 'bg-white text-gray-600 border-gray-200 hover:border-primary/50 hover:bg-gray-50'
-                                            }`}
-                                    >
-                                        {formData.role === r && <Shield size={16} />}
-                                        {r}
-                                    </button>
-                                ))}
+                                {roles.map((role) => {
+                                    const isSelected = formData.role === role.id;
+                                    const Icon = role.icon;
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={role.id}
+                                            onClick={() => setFormData({ ...formData, role: role.id })}
+                                            className={`relative flex items-center justify-center gap-2 py-4 rounded-2xl border-2 text-sm font-bold transition-all overflow-hidden ${isSelected
+                                                ? 'text-primary border-primary bg-primary/5'
+                                                : 'bg-white text-slate-500 border-slate-100 hover:border-slate-300 hover:bg-slate-50'
+                                                }`}
+                                        >
+                                            <Icon size={18} strokeWidth={2.5} className={`relative z-10 ${isSelected ? 'text-primary' : 'text-slate-400'}`} />
+                                            <span className="relative z-10">{role.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
-                        <button
+                        <div className="relative group">
+                            <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                className="block w-full px-5 py-4 pt-7 text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all peer font-medium"
+                                placeholder=" "
+                                required
+                            />
+                            <label
+                                htmlFor="name"
+                                className="absolute text-slate-500 duration-300 transform -translate-y-3 scale-75 top-5 z-10 origin-[0] left-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none font-bold"
+                            >
+                                Full Name
+                            </label>
+                            <User className="absolute right-5 top-5 text-slate-400 peer-focus:text-primary transition-colors" size={20} strokeWidth={2.5} />
+                        </div>
+
+                        <div className="relative group">
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                className="block w-full px-5 py-4 pt-7 text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all peer font-medium"
+                                placeholder=" "
+                                required
+                            />
+                            <label
+                                htmlFor="email"
+                                className="absolute text-slate-500 duration-300 transform -translate-y-3 scale-75 top-5 z-10 origin-[0] left-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none font-bold"
+                            >
+                                Email Address
+                            </label>
+                            <Mail className="absolute right-5 top-5 text-slate-400 peer-focus:text-primary transition-colors" size={20} strokeWidth={2.5} />
+                        </div>
+
+                        <div className="relative group">
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                className="block w-full px-5 py-4 pt-7 text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all peer font-medium"
+                                placeholder=" "
+                                required
+                            />
+                            <label
+                                htmlFor="password"
+                                className="absolute text-slate-500 duration-300 transform -translate-y-3 scale-75 top-5 z-10 origin-[0] left-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none font-bold"
+                            >
+                                Password
+                            </label>
+                            <Lock className="absolute right-5 top-5 text-slate-400 peer-focus:text-primary transition-colors" size={20} strokeWidth={2.5} />
+                        </div>
+
+                        <Button
                             type="submit"
-                            disabled={loading}
-                            className="w-full bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 mt-2"
+                            isLoading={loading}
+                            className="w-full mt-6"
+                            size="lg"
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <>Create Account <ArrowRight size={20} /></>}
-                        </button>
+                            Generate Credentials
+                        </Button>
                     </form>
 
-                    <p className="text-center text-gray-600">
-                        Already have an account? <Link to="/login" className="text-primary font-bold hover:underline">Login</Link>
-                    </p>
-                </div>
-            </motion.div>
-        </div>
+                    <div className="mt-10 text-center text-slate-500 font-medium">
+                        Already verified?{' '}
+                        <Link to="/login" className="text-primary font-bold hover:text-primary/80 transition-colors">
+                            Authenticate
+                        </Link>
+                    </div>
+                </motion.div>
+            </div>
+        </PageWrapper>
     );
 };
 

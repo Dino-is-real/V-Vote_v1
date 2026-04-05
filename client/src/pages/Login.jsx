@@ -2,13 +2,43 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, ShieldCheck, Database, Key } from 'lucide-react';
+import PageWrapper from '../components/layout/PageWrapper';
+import Button from '../components/ui/Button';
+
+const AnimatedBackground = () => {
+    return (
+        <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-white items-center justify-center border-r border-slate-100">
+            {/* Colorful Soft Gradients instead of dark theme */}
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[100px] -translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+
+            <div className="relative z-20 text-center max-w-lg px-8">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-10">
+                        <Lock strokeWidth={2.5} className="w-10 h-10 text-primary" />
+                    </div>
+                    <h2 className="text-5xl md:text-6xl font-black mb-8 tracking-tighter text-slate-900 leading-tight">Welcome <br />Back.</h2>
+                    <p className="text-xl text-slate-600 leading-relaxed font-medium">
+                        Log in to verify your identity and access your dashboard.
+                    </p>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -18,7 +48,6 @@ const Login = () => {
         setError('');
         try {
             await login(email, password);
-            // Redirect based on role
             const storedUser = JSON.parse(localStorage.getItem('user'));
             if (storedUser && storedUser.role) {
                 navigate('/' + storedUser.role.toLowerCase());
@@ -33,101 +62,100 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-white">
-            {/* Left Side - Form */}
-            <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 z-10 bg-white"
-            >
-                <div className="max-w-md w-full space-y-8">
-                    <div className="text-center lg:text-left">
-                        <Link to="/" className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent mb-2 inline-block">
-                            V-Vote
+        <PageWrapper className="min-h-screen flex bg-slate-50 relative overflow-hidden">
+            <AnimatedBackground />
+
+            {/* Right Side - Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 relative z-10 bg-white">
+
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="max-w-md w-full"
+                >
+                    <div className="mb-12">
+                        <Link to="/" className="text-2xl font-black text-slate-900 mb-8 inline-block tracking-tight">
+                            V-Vote<span className="text-primary">.</span>
                         </Link>
-                        <h2 className="text-4xl font-bold text-gray-900 mt-4">Welcome Back!</h2>
-                        <p className="text-gray-500 mt-2">Please enter your details to sign in.</p>
+                        <h2 className="text-4xl font-black text-slate-900 tracking-tight">Sign In</h2>
+                        <p className="text-lg text-slate-500 mt-2 font-medium">Enter your credentials to continue.</p>
                     </div>
 
                     {error && (
                         <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center justify-center gap-3 mb-8 font-bold"
                         >
-                            <span>⚠️ {error}</span>
+                            <span>{error}</span>
                         </motion.div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                    placeholder="Enter your email"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                    placeholder="••••••••"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="rounded text-primary focus:ring-primary" />
-                                <span className="text-gray-600">Remember me</span>
+                        {/* Floating Label Input: Email */}
+                        <div className="relative group">
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                className="block w-full px-5 py-4 pt-7 text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all peer font-medium"
+                                placeholder=" "
+                                required
+                            />
+                            <label
+                                htmlFor="email"
+                                className="absolute text-slate-500 duration-300 transform -translate-y-3 scale-75 top-5 z-10 origin-[0] left-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none font-bold"
+                            >
+                                Email Address
                             </label>
-                            <a href="#" className="text-primary font-medium hover:underline">Forgot password?</a>
+                            <Mail className="absolute right-5 top-5 text-slate-400 peer-focus:text-primary transition-colors" size={20} strokeWidth={2.5} />
                         </div>
 
-                        <button
+                        {/* Floating Label Input: Password */}
+                        <div className="relative group">
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                className="block w-full px-5 py-4 pt-7 text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl appearance-none focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all peer font-medium"
+                                placeholder=" "
+                                required
+                            />
+                            <label
+                                htmlFor="password"
+                                className="absolute text-slate-500 duration-300 transform -translate-y-3 scale-75 top-5 z-10 origin-[0] left-5 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 peer-focus:text-primary pointer-events-none font-bold"
+                            >
+                                Password
+                            </label>
+                            <Lock className="absolute right-5 top-5 text-slate-400 peer-focus:text-primary transition-colors" size={20} strokeWidth={2.5} />
+                        </div>
+
+                        <Button
                             type="submit"
-                            disabled={loading}
-                            className="w-full bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2"
+                            isLoading={loading}
+                            className="w-full mt-4"
+                            size="lg"
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : <>Sign In <ArrowRight size={20} /></>}
-                        </button>
+                            Sign In
+                        </Button>
                     </form>
 
-                    <p className="text-center text-gray-600">
-                        Don't have an account? <Link to="/signup" className="text-primary font-bold hover:underline">Sign up for free</Link>
-                    </p>
-                </div>
-            </motion.div>
-
-            {/* Right Side - Decorative */}
-            <div className="hidden lg:block w-1/2 relative overflow-hidden bg-gray-900">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-90"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-                {/* Decorative Circles */}
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
-
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-16 text-center">
-                    <h2 className="text-5xl font-bold mb-6">Democracy Digitzed.</h2>
-                    <p className="text-xl text-indigo-100 max-w-md">Experience the most secure, transparent, and accessible voting platform ever built.</p>
-                </div>
+                    <div className="mt-10 text-center text-slate-500 font-medium">
+                        Don't have an account?{' '}
+                        <Link to="/signup" className="text-primary font-bold hover:text-primary/80 transition-colors">
+                            Request Access
+                        </Link>
+                    </div>
+                </motion.div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };
 
