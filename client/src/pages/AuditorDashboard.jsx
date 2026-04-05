@@ -30,14 +30,23 @@ const AuditorDashboard = () => {
         const toastId = toast.loading("Verifying cryptographic signatures and generating report...");
 
         try {
-            const res = await api.post('/audit/report');
+            const res = await api.post('/audit/report', {}, { responseType: 'blob' });
 
             setTimeout(() => {
-                toast.success(res.data.msg || "System Integrity Verified Successfully", { id: toastId, duration: 4000 });
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `audit_report_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(url);
+
+                toast.success("Report Generated and Downloaded", { id: toastId, duration: 4000 });
                 setIsVerifying(false);
                 setVerifiedState(true);
-            }, 2500);
-
+            }, 2000); // Slight delay for UX
+            
         } catch (err) {
             toast.error("Integrity Verification Failed", { id: toastId });
             setIsVerifying(false);

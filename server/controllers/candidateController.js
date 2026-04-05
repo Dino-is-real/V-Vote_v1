@@ -34,4 +34,18 @@ const registerCandidate = async (req, res) => {
     }
 };
 
-module.exports = { registerCandidate };
+/* APPROVE CANDIDATE (ADMIN ONLY) */
+const approveCandidate = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const candidate = await Candidate.findByIdAndUpdate(id, { isApproved: true }, { new: true });
+        
+        if (!candidate) return res.status(404).json({ msg: "Candidate not found" });
+        
+        res.status(200).json(candidate);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { registerCandidate, approveCandidate };

@@ -5,7 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
     PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
-import { LayoutDashboard, Users, PlusCircle, CheckCircle2, Clock, Archive, Settings2, ShieldCheck, Power, Activity } from 'lucide-react';
+import { LayoutDashboard, Users, PlusCircle, CheckCircle2, Clock, Archive, Settings2, ShieldCheck, Power, Activity, ChevronDown, ChevronUp, UserCheck } from 'lucide-react';
 import PageWrapper from '../components/layout/PageWrapper';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
@@ -28,6 +28,7 @@ const AdminDashboard = () => {
     });
     const [isCreating, setIsCreating] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [expandedElectionId, setExpandedElectionId] = useState(null);
 
     const fetchElections = async () => {
         try {
@@ -69,6 +70,21 @@ const AdminDashboard = () => {
         } catch (err) {
             toast.error(`Action failed: ${err.message}`, { id: toastId });
         }
+    };
+
+    const handleApproveCandidate = async (candidateId) => {
+        const toastId = toast.loading("Approving candidate...");
+        try {
+            await api.patch(`/candidates/${candidateId}/approve`);
+            toast.success("Candidate approved!", { id: toastId });
+            fetchElections();
+        } catch (err) {
+            toast.error(err.response?.data?.msg || "Failed to approve candidate", { id: toastId });
+        }
+    };
+
+    const toggleExpand = (id) => {
+        setExpandedElectionId(expandedElectionId === id ? null : id);
     };
 
     return (
@@ -158,46 +174,95 @@ const AdminDashboard = () => {
 
                         <div className="space-y-6">
                             {elections.map((election, idx) => (
-                                <motion.div
-                                    key={election._id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
-                                    className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border-2 border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:border-primary/20 transition-all group"
-                                >
-                                    <div>
-                                        <h3 className="font-bold text-2xl text-slate-900 leading-tight group-hover:text-primary transition-colors tracking-tight">{election.title}</h3>
-                                        <div className="flex items-center gap-4 mt-3">
-                                            <span className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest rounded-xl flex items-center gap-2 w-fit
-                                                ${election.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
-                                                    election.status === 'created' ? 'bg-primary/10 text-primary' :
-                                                        election.status === 'closed' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}
-                                            >
-                                                {election.status === 'open' && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse border border-emerald-400"></span>}
-                                                {election.status}
-                                            </span>
-                                            <span className="text-sm text-slate-500 font-bold">{new Date(election.startDate).toLocaleDateString()}</span>
+                                <div key={election._id} className="bg-white rounded-[2rem] shadow-sm border-2 border-slate-50 transition-all hover:border-primary/20 overflow-hidden">
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.1 }}
+                                        className="p-6 md:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group"
+                                    >
+                                        <div className="cursor-pointer" onClick={() => toggleExpand(election._id)}>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-bold text-2xl text-slate-900 leading-tight group-hover:text-primary transition-colors tracking-tight">{election.title}</h3>
+                                                {expandedElectionId === election._id ? <ChevronUp size={24} className="text-slate-400" /> : <ChevronDown size={24} className="text-slate-400" />}
+                                                {election.candidates?.filter(c => !c.isApproved).length > 0 && election.status === 'created' && (
+                                                    <span className="ml-2 bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full">
+                                                        {election.candidates.filter(c => !c.isApproved).length} Pending
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-4 mt-3">
+                                                <span className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest rounded-xl flex items-center gap-2 w-fit
+                                                    ${election.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
+                                                        election.status === 'created' ? 'bg-primary/10 text-primary' :
+                                                            election.status === 'closed' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}
+                                                >
+                                                    {election.status === 'open' && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse border border-emerald-400"></span>}
+                                                    {election.status}
+                                                </span>
+                                                <span className="text-sm text-slate-500 font-bold">{new Date(election.startDate).toLocaleDateString()}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex gap-3 w-full sm:w-auto shrink-0">
-                                        {election.status === 'created' && (
-                                            <Button size="md" onClick={() => handleAction(election._id, 'open')} className="w-full sm:w-auto px-6">
-                                                <Power size={18} strokeWidth={2.5} className="mr-2" /> Open
-                                            </Button>
-                                        )}
-                                        {election.status === 'open' && (
-                                            <Button size="md" onClick={() => handleAction(election._id, 'close')} variant="secondary" className="w-full sm:w-auto border-2 border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300 px-6">
-                                                <Clock size={18} strokeWidth={2.5} className="mr-2" /> Close
-                                            </Button>
-                                        )}
-                                        {election.status === 'closed' && (
-                                            <Button size="md" onClick={() => handleAction(election._id, 'publish')} className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6">
-                                                <Archive size={18} strokeWidth={2.5} className="mr-2" /> Publish
-                                            </Button>
-                                        )}
-                                    </div>
-                                </motion.div>
+                                        <div className="flex gap-3 w-full sm:w-auto shrink-0">
+                                            {election.status === 'created' && (
+                                                <Button size="md" onClick={() => handleAction(election._id, 'open')} className="w-full sm:w-auto px-6">
+                                                    <Power size={18} strokeWidth={2.5} className="mr-2" /> Open
+                                                </Button>
+                                            )}
+                                            {election.status === 'open' && (
+                                                <Button size="md" onClick={() => handleAction(election._id, 'close')} variant="secondary" className="w-full sm:w-auto border-2 border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-300 px-6">
+                                                    <Clock size={18} strokeWidth={2.5} className="mr-2" /> Close
+                                                </Button>
+                                            )}
+                                            {election.status === 'closed' && (
+                                                <Button size="md" onClick={() => handleAction(election._id, 'publish')} className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6">
+                                                    <Archive size={18} strokeWidth={2.5} className="mr-2" /> Publish
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                    
+                                    {/* Expanded Candidates Section */}
+                                    {expandedElectionId === election._id && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, height: 0 }} 
+                                            animate={{ opacity: 1, height: 'auto' }} 
+                                            className="bg-slate-50 border-t-2 border-slate-100 p-6 md:p-8"
+                                        >
+                                            <h4 className="font-bold text-lg text-slate-800 mb-4 flex items-center gap-2"><Users size={20} className="text-primary"/> Candidate Applications</h4>
+                                            {(!election.candidates || election.candidates.length === 0) ? (
+                                                <p className="text-slate-500 text-sm font-medium">No candidates have applied yet.</p>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    {election.candidates.map(candidate => (
+                                                        <div key={candidate._id} className="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                                                            <div>
+                                                                <p className="font-bold text-slate-900">{candidate.user?.name || 'Unknown User'}</p>
+                                                                <p className="text-sm text-slate-500 font-medium">Party: {candidate.party}</p>
+                                                            </div>
+                                                            <div>
+                                                                {candidate.isApproved ? (
+                                                                    <span className="flex items-center gap-1 text-emerald-600 font-bold text-sm bg-emerald-50 px-3 py-1 rounded-lg">
+                                                                        <CheckCircle2 size={16} /> Approved
+                                                                    </span>
+                                                                ) : (
+                                                                    <Button 
+                                                                        size="sm" 
+                                                                        onClick={() => handleApproveCandidate(candidate._id)}
+                                                                        className="bg-emerald-600 hover:bg-emerald-700"
+                                                                    >
+                                                                        <UserCheck size={16} className="mr-1" /> Approve
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </div>
                             ))}
                             {elections.length === 0 && (
                                 <div className="text-center py-16 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200">

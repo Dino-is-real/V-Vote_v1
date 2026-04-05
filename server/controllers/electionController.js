@@ -23,7 +23,10 @@ const createElection = async (req, res) => {
 /* GET ALL ELECTIONS */
 const getElections = async (req, res) => {
     try {
-        const elections = await Election.find().populate('candidates').lean(); // Use lean() to modify results
+        const elections = await Election.find().populate({
+            path: 'candidates',
+            populate: { path: 'user', select: 'name email profileImage' }
+        }).lean(); // Use lean() to modify results
 
         // Redact vote counts if election is not published to prevent early results leaking
         const processedElections = elections.map(election => {
